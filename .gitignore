@@ -73,3 +73,17 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# IDE metadata (user/machine-specific)
+.idea/
+.vscode/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Rider/JetBrains per-solution settings
+*.sln.DotSettings.user
+
+# OS cruft
+.DS_Store
+Thumbs.db

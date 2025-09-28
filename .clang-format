@@ -1,0 +1,48 @@
+# .clang-format (UE-friendly)
+BasedOnStyle: LLVM
+Language: Cpp
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 8
+ColumnLimit: 120
+
+# Braces / layout
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+
+# Pointers / refs
+PointerAlignment: Left
+DerivePointerAlignment: false
+ReferenceAlignment: Left
+
+# Access specifiers at class indent (UE style)
+AccessModifierOffset: -4
+
+# Spacing tweaks
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: true
+NamespaceIndentation: None
+
+# Includes
+# clang-format can't force "own header first", that's handled by Unreal's IWYU.
+# This config ensures generated headers always appear last.
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '.*\.generated\.h'
+    Priority: 999   # generated headers always last
+  - Regex: '.*'
+    Priority: 1     # everything else before
+
+# Constructor initializer lists
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 4
+
+# Switch/case tidy
+IndentCaseLabels: false
+BreakBeforeBinaryOperators: NonAssignment
