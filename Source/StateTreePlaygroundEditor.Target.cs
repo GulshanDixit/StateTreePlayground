@@ -11,5 +11,7 @@ public class StateTreePlaygroundEditorTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
 		ExtraModuleNames.Add("StateTreePlayground");
+		
+		BuildEnvironment = TargetBuildEnvironment.Unique;
 	}
 }
