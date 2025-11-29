@@ -40,4 +40,7 @@ private:
     FTimerHandle TimerHandle;
 
     int32 Index = 0;
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_FireEvent(FGameplayTag Tag);
 };

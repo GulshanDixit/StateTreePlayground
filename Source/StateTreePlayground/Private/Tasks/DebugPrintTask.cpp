@@ -37,6 +37,26 @@ void UDebugPrintTask::PrintMessage(bool bIsEnter) const
     const UStateTreeComponent* Component = CachedComponent.Get();
     const UWorld* World = Component ? Component->GetWorld() : nullptr;
 
+    if (!World)
+    {
+        return;
+    }
+
+    // Check if we should print based on server/client setting
+    const ENetMode NetMode = World->GetNetMode();
+    const bool bIsServer = (NetMode == NM_DedicatedServer || NetMode == NM_ListenServer);
+    const bool bIsClient = (NetMode == NM_Client || NetMode == NM_ListenServer);
+
+    if (bIsServer && !bPrintOnServer)
+    {
+        return;
+    }
+
+    if (bIsClient && !bPrintOnClient)
+    {
+        return;
+    }
+
     const FString Prefix = BuildPrefix(World, bIsEnter);
 
     const FString FinalText =
@@ -65,5 +85,33 @@ FString UDebugPrintTask::BuildPrefix(const UWorld* World, bool bIsEnter) const
                                    : FString::Printf(TEXT("[t=%.2f] "), Time);
     }
 
-    return FString::Printf(TEXT("%s%s"), *TimePart, bIsEnter ? TEXT("[Enter]") : TEXT("[Exit]"));
+    FString RolePart;
+    if (World)
+    {
+        const ENetMode NetMode = World->GetNetMode();
+        if (NetMode == NM_DedicatedServer)
+        {
+            RolePart = TEXT("[Server] ");
+        }
+        else if (NetMode == NM_ListenServer)
+        {
+            RolePart = TEXT("[ListenServer] ");
+        }
+        else if (NetMode == NM_Client)
+        {
+            RolePart = TEXT("[Client] ");
+        }
+    }
+
+    FString PieIdPart;
+    if (bIncludePieId && World)
+    {
+        const int32 PIEInstance = World->GetOutermost()->GetPIEInstanceID();
+        if (PIEInstance != INDEX_NONE)
+        {
+            PieIdPart = FString::Printf(TEXT("[PIE=%d] "), PIEInstance);
+        }
+    }
+
+    return FString::Printf(TEXT("%s%s%s%s"), *TimePart, *RolePart, *PieIdPart, bIsEnter ? TEXT("[Enter]") : TEXT("[Exit]"));
 }

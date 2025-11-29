@@ -4,22 +4,29 @@
 
 #include "TimerManager.h"
 
+#include "Net/UnrealNetwork.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogEventSequencer, Log, All);
 
 AGameEventSequencer::AGameEventSequencer()
 {
     PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+	bAlwaysRelevant = true;
 }
 
 void AGameEventSequencer::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (EventSequence.Num() > 0 && IntervalSeconds > 0.f)
-    {
-        GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameEventSequencer::FireNext, IntervalSeconds, bLoop,
-                                        IntervalSeconds);
-    }
+	if (HasAuthority())
+	{
+		if (EventSequence.Num() > 0 && IntervalSeconds > 0.f)
+		{
+			GetWorldTimerManager().SetTimer(TimerHandle, this, &AGameEventSequencer::FireNext, IntervalSeconds, bLoop,
+											IntervalSeconds);
+		}
+	}
 }
 
 void AGameEventSequencer::FireNext()
@@ -41,9 +48,7 @@ void AGameEventSequencer::FireNext()
         const FGameplayTag Tag = EventSequence[Index++];
         if (Tag.IsValid())
         {
-            OnGameEvent.Broadcast(Tag);
-            UE_LOG(LogEventSequencer, Log, TEXT("[Time=%.2f] Sequencer fired tag: %s"), World->GetTimeSeconds(),
-                   *Tag.ToString());
+        	Multicast_FireEvent(Tag);
         }
     }
 
@@ -58,4 +63,14 @@ void AGameEventSequencer::FireNext()
             GetWorldTimerManager().ClearTimer(TimerHandle);
         }
     }
+}
+
+void AGameEventSequencer::Multicast_FireEvent_Implementation(FGameplayTag Tag)
+{
+	OnGameEvent.Broadcast(Tag);
+	
+	if (const UWorld* World = GetWorld())
+	{
+		UE_LOG(LogEventSequencer, Log, TEXT("[Time=%.2f] Sequencer fired tag: %s"), World->GetTimeSeconds(), *Tag.ToString());
+	}
 }

@@ -37,10 +37,19 @@ protected:
     bool bPrintToLog = true;
 
     UPROPERTY(EditAnywhere, Category = "Debug")
+    bool bPrintOnServer = true;
+
+    UPROPERTY(EditAnywhere, Category = "Debug")
+    bool bPrintOnClient = true;
+
+    UPROPERTY(EditAnywhere, Category = "Debug")
     bool bIncludeGameTime = true;
 
     UPROPERTY(EditAnywhere, Category = "Debug", meta = (EditCondition = "bIncludeGameTime"))
     bool bRoundTimeToInt = false;
+
+    UPROPERTY(EditAnywhere, Category = "Debug")
+    bool bIncludePieId = true;
 
     UPROPERTY(EditAnywhere, Category = "Debug")
     FString Message = TEXT("");
